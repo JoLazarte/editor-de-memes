@@ -1,0 +1,403 @@
+// ASIDE
+const btnImagen = document.getElementById('btn-imagen');
+const solapaImagen= document.getElementById('solapa-imagen');
+
+const btnTexto = document.getElementById('btn-texto');
+const solapaTexto = document.getElementById('solapa-texto');
+
+btnImagen.addEventListener('click', () => {
+    solapaImagen.style.display = 'flex';
+    solapaTexto.style.display = 'none';
+});
+
+btnTexto.addEventListener('click', () => {
+    solapaTexto.style.display = 'flex';
+    solapaImagen.style.display = 'none';
+});
+
+// BOTON ASIDE 
+const btnAside = document.querySelector('.icono-cruz');
+const boxAside = document.querySelector('.box-aside');
+btnAside.addEventListener('click', () => {
+    boxAside.style.display = 'none';
+    btnImagen.addEventListener('click', () => {
+        boxAside.style.display = 'flex';
+        solapaImagen.style.display = 'flex';
+        solapaTexto.style.display = 'none';
+    });
+    
+    btnTexto.addEventListener('click', () => {
+        boxAside.style.display = 'flex';
+        solapaTexto.style.display = 'flex';
+        solapaImagen.style.display = 'none';
+    });
+
+});
+
+// MODO NOCTURNO/CLARO
+const body = document.querySelector('body');
+const buttonTheme = document.querySelector('.button-theme');
+const icono = document.querySelector(".icono-theme");
+const textIconoTheme = document.querySelector('.text-icono-theme')
+
+buttonTheme.addEventListener('click', () => {
+    
+    if (body.className === 'light') {
+    body.className ='dark';
+    textIconoTheme.textContent = 'Modo claro';
+    icono.className = "far fa-sun blanco";
+    
+} else if (body.className === 'dark') {
+    body.className = 'light';
+    textIconoTheme.textContent = 'Modo oscuro';
+    icono.className = "far fa-moon negro";
+
+    }
+
+});
+
+//SOLAPA IMAGEN
+
+//URL-img (input) DIV - img-meme
+
+const urlImagen = document.getElementById('url-img-input'); 
+const divUrl = document.getElementById('imagenMeme');
+
+urlImagen.addEventListener('input',() =>{
+    const url = urlImagen.value;
+    divUrl.style.backgroundImage = `url('${url}')`; 
+});
+
+//COLOR DE FONDO DEL DIVURL (background del div imagenMeme)
+const colorFondo = document.getElementById('colorFondo');
+const nombreColorFondoImg = document.getElementById('nombreColorFondoImg');
+
+colorFondo.addEventListener('input',() =>{
+    let inputColor = colorFondo.value;
+    divUrl.style.backgroundColor = inputColor; 
+    nombreColorFondoImg.textContent = `${inputColor}`;
+});
+
+//BACKGROUND BLENDER MODE (del div imagenMeme)
+const blenderMode = document.getElementById('blMode');
+blenderMode.addEventListener('input', ()=> {
+    divUrl.style.backgroundBlendMode = blenderMode.value;
+});
+
+//FILTROS
+//CREANDO LOS FILTROS EN EL HTML
+
+const filtersContainer = document.getElementById('boxFilters');
+
+const properties = [
+    { name: "brightness"    , default: 1    , min: 0    , max: 10   , step: 0.1 , convertValue: (val) => `${val}`   },
+    { name: "opacity"       , default: 1    , min: 0    , max: 1    , step: 0.1 , convertValue: (val) => `${val}`   },
+    { name: "contrast"      , default: 100  , min: 100  , max: 1000 , step: 1   , convertValue: (val) => `${val}%`  },
+    { name: "blur"          , default: 0    , min: 0    , max: 10   , step: 0.1 , convertValue: (val) => `${val}px` },
+    { name: "grayscale"     , default: 0    , min: 0    , max: 100  , step: 1   , convertValue: (val) => `${val}%`  },
+    { name: "sepia"         , default: 0    , min: 0    , max: 100  , step: 1   , convertValue: (val) => `${val}%`  },
+    { name: "hue-rotate"    , default: 0    , min: 0    , max: 360  , step: 1   , convertValue: (val) => `${val}deg`},
+    { name: "saturate"      , default: 100  , min: 100  , max: 1000 , step: 10  , convertValue: (val) => `${val}%`  },
+    { name: "invert"        , default: 1    , min: 0    , max: 100  , step: 0.1 , convertValue: (val) => `${val}%`  }
+]
+
+console.log(properties); //Creo un array con 9 objetos (9 indexes del 0 al 8)
+//Cada objeto tiene 5 propiedades y un método. Las 5 propiedades son los atributos del 
+//input type=range. Voy a utilizar estos datos para crear los filtros (inputs type=range)
+//y para modificarlos con las funciones updateFilter() y resetFilter().
+
+const createSlider = (property) => {
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.id = property.name + "Slider";
+    slider.min = property.min;
+    slider.max = property.max;
+    slider.step = property.step;
+    slider.value = property.default;
+
+    const label = document.createElement("label");
+    label.innerText = property.name;
+    label.htmlFor = slider.id;
+    
+    [label, slider].forEach(el => filtersContainer.appendChild(el))
+}
+
+properties.forEach(createSlider)
+
+const propertiesElements = properties.map(property => ({
+    ...property, 
+    element: document.getElementById(property.name + "Slider") //llamo a todos los slider.id
+}));
+
+console.log(propertiesElements); //Array con 9 objetos (9 indexes del 0 al 8)
+//Cada objeto tiene las mismas 5 propiedades y un método del array inicial 
+//+ un elemento HTML (asignado a "element"), agregado por el método .map()
+
+//CAMBIAR LOS VALORES DE LOS FILTROS
+const updateFilter = () => {
+    const filter = propertiesElements.map(el => `${el.name}(${el.convertValue(el.element.value)})`).join(" ");
+    divUrl.style.filter = filter;
+    
+};
+//Le aplico un nuevo .map() al nuevo array, pero no agrgo ningún otro elemento, sino
+//que tomo dos propiedades (name y element, creado por el primer .map()) 
+//y un método (convertValue()) específicos de cada objeto del array.
+//Le asigno ese resultado a divUrl.style.filter 
+
+propertiesElements.forEach(property => property.element.addEventListener("change", updateFilter));
+//Llamo a la función anterior como parámetro del evento "change", aplicado sobre 
+//la propiedad "element" de cada objeto de mi array (creado por el primer .map()), 
+//que en realidad es un elemento HTML, en este caso, son los inputs type=range 
+//("las barritas de cada filtro")
+
+//Para que cada propiedad "element" de cada objeto (index) del array "propertiesElements" 
+//reciba el evento "change", utilizo el bucle forEach como método sobre mi array.
+
+//REGRESAR A LOS VALORES DE LOS FILTROS POR DEFAULT
+const resetFilter = () => { 
+    propertiesElements.forEach(property => {
+        property.element.value = property.default 
+    })
+    updateFilter()
+}
+
+document.getElementById("btn-filtro").addEventListener("click", resetFilter);
+
+/*
+const btFiltros = document.querySelector('#btn-filtro');
+
+const brillo = document.getElementById('brillo');
+const opacidad = document.getElementById('opacidad');
+const contraste = document.getElementById('contraste');
+const desenfoque = document.getElementById('desenfoque');
+const escalaGrises = document.getElementById('escala-de-grises');
+const sepia = document.getElementById('sepia');
+const hue = document.getElementById('hue');
+const saturado = document.getElementById('saturado');
+const negativo = document.getElementById('negativo');
+
+const updateFilter = () => {
+    divUrl.style.filter = `brightness(${brillo.value}) opacity(${opacidad.value}) contrast(${contraste.value}%) blur(${desenfoque.value}px) grayscale(${escalaGrises.value}%) sepia(${sepia.value}%) hue-rotate(${hue.value}deg) saturate(${saturado.value}%) invert(${negativo.value})`;
+};
+
+brillo.addEventListener("change", updateFilter);
+opacidad.addEventListener("change", updateFilter);
+contraste.addEventListener("change", updateFilter);
+desenfoque.addEventListener("change", updateFilter);
+escalaGrises.addEventListener("change", updateFilter);
+sepia.addEventListener("change", updateFilter);
+hue.addEventListener("change", updateFilter);
+saturado.addEventListener("change", updateFilter);
+negativo.addEventListener("change", updateFilter);
+
+//REESTABLECER FILTROS
+const resetFilter = () => {
+    brillo.value = 1;
+    opacidad.value = 1;
+    contraste.value = 100;
+    desenfoque.value = 0;
+    escalaGrises.value = 0;
+    sepia.value = 0;
+    hue.value = 0;
+    saturado.value = 100;
+    negativo.value = 0;
+    updateFilter();
+};
+btFiltros.addEventListener('click', resetFilter);
+*/
+
+//SOLAPA TEXTO
+
+//TEXTO SUP/INF
+const inTxSuperior = document.getElementById('text-superior');
+const inTxInferior = document.getElementById('text-inferior');
+const textSup = document.getElementById('textSup');
+const textInf = document.getElementById('textInf');
+
+inTxSuperior.addEventListener('input',() =>{
+    textSup.innerHTML = inTxSuperior.value; 
+});
+inTxInferior.addEventListener('input',() =>{
+    textInf.innerHTML = inTxInferior.value; 
+});
+
+// SELECCIÓN DE FUENTES
+const selectFuente = document.getElementById('selectFuente');
+selectFuente.addEventListener('input', ()=> {  //'change', (event)
+    textSup.style.fontFamily = selectFuente.value;  //event.target.value
+    textInf.style.fontFamily = selectFuente.value; //event.target.value
+});
+
+//TAMAÑO DE FUENTE
+const fontSize = document.getElementById('fontSize');
+fontSize.addEventListener('input', ()=>{
+    textSup.style.fontSize = `${fontSize.value}px`;
+    textInf.style.fontSize = `${fontSize.value}px`;
+});
+
+//SELECCIÓN DE ALINEACIÓN DE TEXTO
+
+const textLeftBt = document.getElementById('boton-txLeft');
+const textCenterBt = document.getElementById('boton-txCenter');
+const textRightBt = document.getElementById('boton-txRight');
+
+textLeftBt.addEventListener('click', ()=>{
+    textSup.style.textAlign = "left";
+    textInf.style.textAlign = "left";
+
+});
+textCenterBt.addEventListener('click', ()=>{
+    textSup.style.textAlign = "center";
+    textInf.style.textAlign = "center";
+
+});
+textRightBt.addEventListener('click', ()=>{
+    textSup.style.textAlign = "right";
+    textInf.style.textAlign = "right";
+
+});
+
+//COLOR y FONDO TEXTO
+const colorTexto = document.getElementById('colorTexto');
+const colorTxFondo = document.getElementById('colorTxFondo');
+const nombreFondoClTx = document.getElementById('nombreFondoClTx');
+const nombreColorTx = document.getElementById('nombreColorTx');
+
+colorTxFondo.addEventListener('input',() =>{
+    let pafoColor = colorTxFondo.value;
+    textSup.style.backgroundColor = pafoColor; 
+    textInf.style.backgroundColor = pafoColor;
+    nombreFondoClTx.textContent = `${pafoColor}`;
+});
+
+colorTexto.addEventListener('input',() =>{
+    let pafoLetraColor = colorTexto.value;
+    textSup.style.color = pafoLetraColor; 
+    textInf.style.color = pafoLetraColor;
+    nombreColorTx.textContent = `${pafoLetraColor}`;
+});
+
+//CHECKBOX de TEXTO SUP/INF
+const inputSCheck = document.getElementById('checkbox-superior');
+const inputICheck = document.getElementById('checkbox-inferior');
+
+inputSCheck.addEventListener('input', () => {
+    if (inputSCheck.checked) {
+      console.log('checkeado');
+      inTxSuperior.disabled = true; 
+      textSup.style.display = "none";
+    } else {
+      console.log('sin checkear');
+      inTxSuperior.disabled = false;
+      textSup.style.display = "block";
+      textSup.style.color = `${colorTexto.value}`;
+    }
+});
+
+inputICheck.addEventListener('input', () => {
+    if (inputICheck.checked) {
+      console.log('checkeado');
+      inTxInferior.disabled = true; 
+      textInf.style.display = "none";
+    } else {
+      console.log('sin checkear');
+      inTxInferior.disabled = false;
+      textInf.style.display = "block";
+      textInf.style.color = `${colorTexto.value}`;
+    }
+});
+
+//FONDO de texto TRANSPARENTE
+ const fondoTransparente = document.getElementById('fondo-transparente');
+ const divMeme = document.getElementById('divMeme')
+ 
+ fondoTransparente.addEventListener('input', () => {
+     if (fondoTransparente.checked) {
+       console.log('checkeado');
+       colorTexto.disabled = true; 
+       colorTxFondo.disabled = true; 
+       textSup.style.backgroundColor = "transparent";
+       textInf.style.backgroundColor = "transparent";
+       textSup.style.position = "absolute";
+       textInf.style.position = "absolute";
+     } else {
+       console.log('sin checkear');
+       colorTexto.disabled = false; 
+       colorTxFondo.disabled = false; 
+       textSup.style.position = "static";
+       textInf.style.position = "static";
+       textSup.style.backgroundColor = `${colorTxFondo.value}`;
+       textInf.style.backgroundColor = `${colorTxFondo.value}`;
+ 
+       //colorTxFondo.dispatchEvent(new Event('input'))
+     }
+ });
+
+//CONTORNO (Text shadow)
+const sinContorno = document.getElementById('sinCont');
+const contClaro = document.getElementById('contClaro');
+const contOscuro = document.getElementById('contOscuro');
+
+sinContorno.addEventListener('click', ()=>{
+    textSup.style.textShadow = "none";
+    textInf.style.textShadow = "none";
+});
+
+contClaro.addEventListener('click', ()=>{
+    textSup.style.textShadow = "rgb(255 255 255) 2px 2px, rgb(255 255 255) -2px 2px, rgb(255 255 255) 2px -2px, rgb(255 255 255) -2px -2px";
+    textInf.style.textShadow = "rgb(255 255 255) 2px 2px, rgb(255 255 255) -2px 2px, rgb(255 255 255) 2px -2px, rgb(255 255 255) -2px -2px";
+});
+
+contOscuro.addEventListener('click', ()=>{
+    textSup.style.textShadow = "rgb(0 0 0) 2px 2px, rgb(0 0 0) -2px 2px, rgb(0 0 0) 2px -2px, rgb(0 0 0) -2px -2px";
+    textInf.style.textShadow = "rgb(0 0 0) 2px 2px, rgb(0 0 0) -2px 2px, rgb(0 0 0) 2px -2px, rgb(0 0 0) -2px -2px";
+});
+
+//ESPACIADO
+const inEspaciado = document.getElementById('paddingTB');
+inEspaciado.addEventListener('input', ()=>{
+    textSup.style.padding = `${inEspaciado.value}px 50px`;
+    textInf.style.padding = `${inEspaciado.value}px 50px`;
+});
+
+//INTERLINEADO 
+const selectInterlineado = document.getElementById('interlineado');
+selectInterlineado.addEventListener('input', ()=>{
+    textSup.style.lineHeight = selectInterlineado.value;
+    textInf.style.lineHeight = selectInterlineado.value;
+});
+//BOTÓN DE DESCARGA
+const descargarBtn = document.getElementById('descargarImg');
+
+descargarBtn.addEventListener('click', ()=>{
+    
+    //const anchoBase = divMeme.offsetWidth;
+    //const altoBase = divMeme.offsetHeight;
+    //divMeme.style.width = anchoBase*2 + "px";
+    //divMeme.style.height = altoBase*2 + "px";
+    domtoimage.toBlob(divMeme)
+    .then(function (blob) {
+    window.saveAs(blob, 'my-node.png');
+    //divMeme.style.width = anchoBase + "px";
+    //divMeme.style.height = altoBase + "px";
+    })
+});
+
+//Subir una imagen desde tu pc/celular
+document.getElementById('inpFile').addEventListener("change", function(){
+    const file = this.files[0];
+    const reader = new FileReader();
+    reader.addEventListener("load", function(){
+        divUrl.style.backgroundImage = `url(${this.result})`;
+    })
+    reader.readAsDataURL(file); 
+});
+
+//Ajustar el contenedor del meme (alto=ancho)
+const ajustarImagen = () => {
+	divMeme.style.height = `${
+	  divMeme.getBoundingClientRect().width
+	}px`
+};
+
+window.addEventListener('resize', ajustarImagen);
