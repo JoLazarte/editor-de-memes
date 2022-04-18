@@ -1,0 +1,19 @@
+{
+  "name": "editor-de-memes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoLazarte/editor-de-memes.git"
+  },
+  "author": "Joanna Lazarte",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoLazarte/editor-de-memes/issues"
+  },
+  "homepage": "https://github.com/JoLazarte/editor-de-memes#readme"
+}

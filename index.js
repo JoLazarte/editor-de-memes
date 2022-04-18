@@ -101,11 +101,7 @@ const properties = [
     { name: "invert"        , default: 1    , min: 0    , max: 100  , step: 0.1 , convertValue: (val) => `${val}%`  }
 ]
 
-console.log(properties); //Creo un array con 9 objetos (9 indexes del 0 al 8)
-//Cada objeto tiene 5 propiedades y un método. Las 5 propiedades son los atributos del 
-//input type=range. Voy a utilizar estos datos para crear los filtros (inputs type=range)
-//y para modificarlos con las funciones updateFilter() y resetFilter().
-
+console.log(properties); 
 const createSlider = (property) => {
     const slider = document.createElement("input");
     slider.type = "range";
@@ -129,9 +125,7 @@ const propertiesElements = properties.map(property => ({
     element: document.getElementById(property.name + "Slider") //llamo a todos los slider.id
 }));
 
-console.log(propertiesElements); //Array con 9 objetos (9 indexes del 0 al 8)
-//Cada objeto tiene las mismas 5 propiedades y un método del array inicial 
-//+ un elemento HTML (asignado a "element"), agregado por el método .map()
+console.log(propertiesElements); 
 
 //CAMBIAR LOS VALORES DE LOS FILTROS
 const updateFilter = () => {
@@ -139,19 +133,10 @@ const updateFilter = () => {
     divUrl.style.filter = filter;
     
 };
-//Le aplico un nuevo .map() al nuevo array, pero no agrgo ningún otro elemento, sino
-//que tomo dos propiedades (name y element, creado por el primer .map()) 
-//y un método (convertValue()) específicos de cada objeto del array.
-//Le asigno ese resultado a divUrl.style.filter 
+
 
 propertiesElements.forEach(property => property.element.addEventListener("change", updateFilter));
-//Llamo a la función anterior como parámetro del evento "change", aplicado sobre 
-//la propiedad "element" de cada objeto de mi array (creado por el primer .map()), 
-//que en realidad es un elemento HTML, en este caso, son los inputs type=range 
-//("las barritas de cada filtro")
 
-//Para que cada propiedad "element" de cada objeto (index) del array "propertiesElements" 
-//reciba el evento "change", utilizo el bucle forEach como método sobre mi array.
 
 //REGRESAR A LOS VALORES DE LOS FILTROS POR DEFAULT
 const resetFilter = () => { 
